@@ -6,8 +6,6 @@
 
 function computeNumberOfSwaps(input) {
     const array = input.split("");
-    let aCount = 0;
-    let bCount = 0;
     let aConsecutiveCount = 0;
     let bConsecutiveCount = 0;
     let aFourthPositionCount = 0;
@@ -16,7 +14,6 @@ function computeNumberOfSwaps(input) {
 
     for (let letter of array) {
         if (letter === "a") {
-            aCount++;
             aConsecutiveCount++;
             bConsecutiveCount = 0;
             if (aConsecutiveCount === 4) {
@@ -24,7 +21,6 @@ function computeNumberOfSwaps(input) {
                 aConsecutiveCount = 0;
             }
         } else {
-            bCount++;
             bConsecutiveCount++;
             aConsecutiveCount = 0;
             if (bConsecutiveCount === 4) {
@@ -34,27 +30,13 @@ function computeNumberOfSwaps(input) {
         }
     }
 
-    console.log("a 4th position count: " + aFourthPositionCount);
-    console.log("a count: " + aCount);
-    console.log("b 4th position count: " + bFourthPositionCount);
-    console.log("b count: " + bCount);
+    // console.log("a 4th position count: " + aFourthPositionCount);
+    // console.log("a count: " + aCount);
+    // console.log("b 4th position count: " + bFourthPositionCount);
+    // console.log("b count: " + bCount);
 
-    minimumNumberOfSwaps += Math.min(
-        aFourthPositionCount,
-        bFourthPositionCount
-    );
-    if (aFourthPositionCount > bFourthPositionCount) {
-        minimumNumberOfSwaps += Math.min(
-            aFourthPositionCount - bFourthPositionCount,
-            bCount
-        );
-    }
-    if (aFourthPositionCount < bFourthPositionCount) {
-        minimumNumberOfSwaps += Math.min(
-            bFourthPositionCount - aFourthPositionCount,
-            aCount
-        );
-    }
+    minimumNumberOfSwaps += Math.min(aFourthPositionCount, bFourthPositionCount);
+    minimumNumberOfSwaps += Math.abs(aFourthPositionCount - bFourthPositionCount);
 
     return minimumNumberOfSwaps;
 }
@@ -99,91 +81,68 @@ function computeNumberOfSwapsWithMap(input) {
         }
     }
 
-    const fourthPositionAValues = aMap.get(4);
-    const fourthPositionBValues = bMap.get(4);
+    minimumNumberOfSwaps += swapArray(array, aMap, bMap);
+    minimumNumberOfSwaps += swapArray(array, bMap, aMap);
 
-    while(fourthPositionAValues.length > 0){
-        var aIndex = fourthPositionAValues.shift();
-        let bIndex = bMap.get(4).shift();
-        if(bIndex){
-            swapIndices(array, aIndex, bIndex);
-            minimumNumberOfSwaps++;
-            continue;
-        }
-        bIndex = bMap.get(1).pop();
-        if(bIndex){
-            swapIndices(array, aIndex, bIndex);
-            minimumNumberOfSwaps++;
-            continue;
-        }
-        bIndex = bMap.get(2).pop();
-        if(bIndex){
-            swapIndices(array, aIndex, bIndex);
-            minimumNumberOfSwaps++;
-            continue;
-        }
-        bIndex = bMap.get(3).pop();
-        if(bIndex){
-            swapIndices(array, aIndex, bIndex);
-            minimumNumberOfSwaps++;
-            continue;
-        }
-    }
+    console.log('Output: ' + array.join(''));
 
-    while(fourthPositionBValues.length > 0){
-        var bIndex = fourthPositionBValues.shift();
-        let aIndex = aMap.get(4).shift();
-        if(aIndex){
-            swapIndices(array, aIndex, bIndex);
-            minimumNumberOfSwaps++;
-            continue;
-        }
-        aIndex = aMap.get(1).pop();
-        if(aIndex){
-            swapIndices(array, aIndex, bIndex);
-            minimumNumberOfSwaps++;
-            continue;
-        }
-        aIndex = aMap.get(2).pop();
-        if(aIndex){
-            swapIndices(array, aIndex, bIndex);
-            minimumNumberOfSwaps++;
-            continue;
-        }
-        aIndex = aMap.get(3).pop();
-        if(aIndex){
-            swapIndices(array, aIndex, bIndex);
-            minimumNumberOfSwaps++;
-            continue;
-        }
-    }
-
-    console.log(array);
-
-    let isValid = validateArray(array);
-    console.log(`isValid: ${isValid}`);
+    let invalidIndices = getInvalidIndices(array);
+    console.log('Invalid indices: ' + invalidIndices.join(','));
     //console.log(aMap);
     //console.log(bMap);
     return minimumNumberOfSwaps;
 }
 
-function validateArray(array){
+function swapArray(array, map1, map2){
+    var minimumNumberOfSwaps = 0;
+    while(map1.get(4).length > 0){
+        var index1 = map1.get(4).shift();
+        let index2 = map2.get(4).shift();
+        if(index2){
+            swapIndices(array, index1, index2);
+            minimumNumberOfSwaps++;
+            continue;
+        }
+        index2 = map2.get(1).pop();
+        if(index2){
+            swapIndices(array, index1, index2);
+            minimumNumberOfSwaps++;
+            continue;
+        }
+        index2 = map2.get(2).pop();
+        if(index2){
+            swapIndices(array, index1, index2);
+            minimumNumberOfSwaps++;
+            continue;
+        }
+        index2= amap2.get(3).pop();
+        if(index2){
+            swapIndices(array, index1, index2);
+            minimumNumberOfSwaps++;
+            continue;
+        }
+    }
+    return minimumNumberOfSwaps;
+}
+
+function getInvalidIndices(array){
     let lastLetter = '';
     let consecutiveCount = 0;
-    let isValid = true;
-    for(let letter of array){
+    let invalidIndices = [];
+    for(var i = 0; i < array.length; i++){
+        const letter = array[i];
         if(letter === lastLetter){
             consecutiveCount++;
-            if(consecutiveCount === 4){
-                isValid = false;
-                break;
+            if(consecutiveCount === 3){
+                invalidIndices.push(i);
+                consecutiveCount = 0;
             }
         } else {
             consecutiveCount = 0;
         }
         lastLetter = letter;
     }
-    return isValid;
+    return invalidIndices;
 }
 
 function swapIndices(array, index1, index2){
@@ -192,7 +151,22 @@ function swapIndices(array, index1, index2){
     array[index2] = temp;
 }
 
-const numberOfSwaps = computeNumberOfSwaps(
-    "bbbbbaababababbbbbbbbbbbaaaabbbbbbabaabababababbbbbbbbbbbbbbaaaaaaaaaaaaaaa"
-);
+function getRandomAB(){
+    return Math.random() < 0.5 ? 'a' : 'b';
+}
+
+function generateRandomString(numberOfLetters){
+    var array = [];
+    for(var i = 0; i < numberOfLetters; i++){
+        var ab = getRandomAB();
+        array.push(ab);
+    }
+    return array.join('');
+}
+const input = generateRandomString(500);
+//const input = 'aaaabbbb'
+console.log('Input: ' + input);
+const numberOfSwapsWithMap = computeNumberOfSwapsWithMap(input);
+console.log(`Number of swaps w/ map: ${numberOfSwapsWithMap}`);
+const numberOfSwaps = computeNumberOfSwaps(input);
 console.log(`Number of swaps: ${numberOfSwaps}`);
