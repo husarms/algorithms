@@ -44,10 +44,10 @@ function computeDeletionCost(S, C) {
     //console.log(`Input: ${S}`);
     costMap.forEach( (value, key) => {
         let sortedData = value.data.sort((a,b) => a.cost - b.cost);
-        console.log(`${key}: ${JSON.stringify(value)}`); 
+        //console.log(`${key}: ${JSON.stringify(value)}`); 
         while(sortedData.length > 1){
             let item = sortedData.shift();
-            console.log(`Delete at index ${item.index} for cost of ${item.cost}`);
+            //console.log(`Delete at index ${item.index} for cost of ${item.cost}`);
             minimumCost += item.cost;
             array[item.index] = '$';
             //console.log(`Minimum cost: ${item.cost}`);
@@ -103,11 +103,12 @@ function generateCosts(length, min, max) {
     return costs;
 }
 
-const length = 10000;
+const length = 16;
 //const string = generateString(length, "abcdefghijklmnopqrstuvwxyz");
-const string = generateString(length, "abcd");
+const string = generateString(length, "ab");
 const costs = generateCosts(length, 1, 9);
 console.log(string);
+console.log(costs.join(','));
 
 const minimumDeletionCost = computeDeletionCost(string, costs);
 console.log(`Minimum deletion cost: ${minimumDeletionCost}`);
