@@ -78,24 +78,27 @@ function generateRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
-function generateRandomResult() {
+function generateResults(numberOfTestGroups) {
     const results = ["OK", "OK", "OK", "Too Slow", "Incorrect"];
-    return results[Math.floor(Math.random() * results.length)];
+    let resultArray = [];
+    for (var i = 1; i < numberOfTestGroups; i++) {
+        const result = results[Math.floor(Math.random() * results.length)];
+        resultArray.push(result);
+    }
+    return resultArray;
 }
 
-function generateTestResults(prefix, numberOfTestGroups) {
+function generateTestGroups(prefix, numberOfTestGroups) {
     const chars = "abcdefghijklmnopqrstuvwxyz";
     const testGroups = [];
     for (var i = 1; i < numberOfTestGroups; i++) {
         const numberOfSubGroups = generateRandomNumber(0, 4);
         if (numberOfSubGroups === 0) {
-            let result = generateRandomResult();
-            testGroups.push({ name: `${prefix}${i}`, result });
+            testGroups.push(`${prefix}${i}`);
         } else {
             for (var j = 0; j < numberOfSubGroups; j++) {
                 const letter = chars.charAt(j);
-                let result = generateRandomResult();
-                testGroups.push({ name: `${prefix}${i}${letter}`, result });
+                testGroups.push(`${prefix}${i}${letter}`);
             }
         }
     }
@@ -113,10 +116,17 @@ function generateTestResults(prefix, numberOfTestGroups) {
 //     { name: "testgroup4b", result: "OK" },
 //     { name: "testgroup5", result: "Incorrect" },
 // ];
-const results = generateTestResults("testgroup", 100000);
+
+const testGroups = generateTestGroups("test", 300);
+const results = generateResults(300);
+
+console.log(testGroups.slice(0, 20).join("','"));
+console.log(results.slice(0, 20).join("','"));
+
+//const results = generateTestResults("testgroup", 100000);
 //console.log(results);
-let t0 = performance.now();
-const testScore = computeTestScore(results);
-let t1 = performance.now();
-console.log(`Test score: ${testScore}`);
-console.log(`Execution time: ${t1 - t0}ms`);
+// let t0 = performance.now();
+// const testScore = computeTestScore(results);
+// let t1 = performance.now();
+// console.log(`Test score: ${testScore}`);
+// console.log(`Execution time: ${t1 - t0}ms`);
